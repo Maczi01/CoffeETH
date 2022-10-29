@@ -6,21 +6,43 @@
 // global scope, and execute the script.
 const hre = require("hardhat");
 
+async function getBalance(address){
+    const balance = await hre.ethers.provider.getBalance(address);
+    return hre.ethers.utils.formatEther(balance);
+}
+
+async function printBalances(addresses){
+  addresses.map(async (address) => {
+    console.log(address, await getBalance(address));
+  })
+}
+
+async function printMemos(memos){
+  for(const memo of memos){
+    const timestamp = memo.timestamp();
+    const tipper = memo.name();
+    const tipperAddress = memo.from();
+    const message = memo.message();
+    console.log(`At ${timestamp}, ${tipper} (${tipperAddress}) left a message: ${message}`);
+  }
+}
+
+
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
 
-  const lockedAmount = hre.ethers.utils.parseEther("1");
+  const [owner, tipper, tipper2, tipper3] = await hre.ethers.getSigners();
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  const BuyMeACoffee = await hre.ethers.getContractFactory("BuyMeACoffee");
+  const buyMeACoffee = await BuyMeACoffee.deploy();
+  await buyMeACoffee.deployed();
+  console.log("BuyMeACoffee deployed to:", buyMeACoffee.address);
 
-  await lock.deployed();
+  const address = [owner.address, tipper.address, buyMeACoffee.address];
+  console.log("=====start=====");
+  await printBalances(address);
 
-  console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  );
+
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
