@@ -167,7 +167,7 @@ export default function Home() {
     return (
         <div className={styles.container}>
             <Head>
-                <title>Buy Albert a Coffee!</title>
+                <title>Buy Mattie a Coffee!</title>
                 <meta name="description" content="Tipping site" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>

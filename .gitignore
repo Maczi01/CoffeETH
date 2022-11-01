@@ -10,3 +10,5 @@ cache
 artifacts
 
 ./node_modules
+
+.vercel
